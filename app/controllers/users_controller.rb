@@ -24,16 +24,17 @@ class UsersController < ApplicationController
   # POST /users
   # POST /users.json
   def create
+    puts user_params.inspect
     @user = User.new(user_params)
+    if @user.save
+      # The Rails way to display a temporary message is to use a special method called the flash, which we can treat
+      # like a hash. Rails adopts the convention of a :success key for a message indicating a successful result
+      flash[:success] = "Welcome to the Sample App!"
 
-    respond_to do |format|
-      if @user.save
-        format.html { redirect_to @user, notice: 'User was successfully created.' }
-        format.json { render :show, status: :created, location: @user }
-      else
-        format.html { render :new }
-        format.json { render json: @user.errors, status: :unprocessable_entity }
-      end
+      # Rails automatically infers from redirect_to @user that we want to redirect to user_url(@user)
+      redirect_to @user
+    else
+      render 'new'
     end
   end
 
@@ -69,6 +70,6 @@ class UsersController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def user_params
-      params.require(:user).permit(:name, :email)
+      params.require(:user).permit(:name, :email, :password, :password_confirmation)
     end
 end
