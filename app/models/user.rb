@@ -5,8 +5,9 @@ class User < ActiveRecord::Base
   validates :name, presence: true
   validates :email, presence: true, length: { maximum: 255 }, format: { with: VALID_EMAIL_REGEX }, uniqueness: true
   before_save { self.email = email.downcase }
-  validates :password, length: { minimum: 6 }
+  validates :password, length: { minimum: 6 }, allow_nil: true
   # this method is introduced by bcrypt, which acts as a call back function
+  # it also includes a separate presence validation on object creation.
   has_secure_password
 
 
@@ -45,5 +46,20 @@ class User < ActiveRecord::Base
   # Forgets a user.
   def forget
     update_attribute(:remember_digest, nil)
+  end
+
+
+
+  # for test purpose only
+  def new_record?
+    $stderr.puts 'In new_record? method!' if Rails.env.development?
+    super
+  end
+
+
+
+  def self.find(*args)
+    puts 'In find method' if Rails.env.development?
+    super(*args)
   end
 end

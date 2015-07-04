@@ -10,21 +10,14 @@ module SessionsHelper
     session[:user_id] = user.id
   end
 
+
+  # to specify the user of current session, though i still haven't figured out
+  # the definition of session
   def current_user
-    puts '######################'
-    puts session[:user_id].inspect
-
-    puts '%%%%%%%%%%%%%%%%%%%%%%'
-    puts cookies.signed[:user_id].inspect
-
-    puts '@@@@@@@@@@@@@@@@@@@@@@'
-    puts @current_user.present?
-
     if session[:user_id]
       @current_user ||= User.find_by(id: session[:user_id])
     elsif cookies.signed[:user_id]
       user = User.find_by(id: cookies.signed[:user_id])
-puts user.present?
       if user && user.authenticated?(cookies[:remember_token])
         puts 'ain\'t I in?'
         log_in user
@@ -59,6 +52,21 @@ puts user.present?
     # and permanent methods:
     cookies.permanent.signed[:user_id] = user.id
     cookies.permanent[:remember_token] = user.remember_token
+  end
+
+  def current_user?(user)
+    user == current_user
+  end
+
+  # Redirects to stored location (or to the default).
+  def redirect_back_or(default)
+    redirect_to(session[:forwarding_url] || default)
+    session.delete(:forwarding_url)
+  end
+
+  # Stores the URL trying to be accessed.
+  def store_location
+    session[:forwarding_url] = request.url if request.get?
   end
 
 

@@ -1,0 +1,15 @@
+<!-- why this kind of file always starts with an underscore? -->
+<li>
+  <%= gravatar_for user, size: 50 %>
+  <%= link_to user.name, user %>
+
+  <!--
+    Note the method: :delete argument, which arranges for the link to issue
+    the necessary DELETE request. We’ve also wrapped each link inside an if
+    statement so that only admins can see them.
+  -->
+  <% if current_user.admin? && !current_user?(user) %>
+      | <%= link_to "delete", user, method: :delete,
+                    data: { confirm: "You fucking sure?" } %>
+  <% end %>
+</li>
