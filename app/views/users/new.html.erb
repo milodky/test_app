@@ -4,6 +4,12 @@
 <div class="row">
   <div class="col-md-6 col-md-offset-3">
     <%= form_for(@user) do |f| %>
+        <!--
+         here we render a partial called ’shared/error_messages’; this reflects the
+         common Rails convention of using a dedicated shared/ directory for partials
+         expected to be used in views across multiple controllers. This means that
+         we have to create a new app/views/shared directory
+         -->
         <%= render 'shared/error_messages' %>
 
         <%= f.label :name %>
@@ -17,6 +23,8 @@
 
         <%= f.label :password_confirmation, "Confirmation" %>
         <%= f.password_field :password_confirmation, class: 'form-control' %>
+
+        <!-- the CSS class form-control has special meaning to Bootstrap -->
 
         <%= f.submit "Create my account", class: "btn btn-primary" %>
     <% end %>
