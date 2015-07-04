@@ -24,9 +24,12 @@ class UsersController < ApplicationController
   # POST /users
   # POST /users.json
   def create
-    puts user_params.inspect
     @user = User.new(user_params)
     if @user.save
+      # Although our authentication system is now working, newly registered users might be confused, as they are not
+      # logged in by default. Because it would be strange to force users to log in immediately after signing up, we’ll
+      # log in new users automatically as part of the signup process.
+      log_in(@user)
       # The Rails way to display a temporary message is to use a special method called the flash, which we can treat
       # like a hash. Rails adopts the convention of a :success key for a message indicating a successful result
       flash[:success] = "Welcome to the Sample App!"

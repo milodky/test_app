@@ -169,8 +169,7 @@ aside {
   height: 27px;
 }
 
-A . prefix usually represents a class selector, but if it's immediately
-followed by whitespace then it's a syntax error.
+A . prefix usually represents a class selector.
 In the example, .work-container h3, simply means any h3 that's contained
 within an element with a class called work-container.
 */
@@ -180,4 +179,18 @@ within an element with a class called work-container.
   .form-control {
     color: $state-danger-text;
   }
+}
+
+.checkbox {
+  margin-top: -10px;
+  margin-bottom: 10px;
+  span {
+    margin-left: 20px;
+    font-weight: normal;
+  }
+}
+
+#session_remember_me {
+  width: auto;
+  margin-left: 0;
 }
