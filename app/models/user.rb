@@ -1,11 +1,12 @@
 class User < ActiveRecord::Base
-  attr_accessor :remember_token
+  attr_accessor :remember_token, :activation_token
   has_many :microposts
   VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
   validates :name, presence: true
   validates :email, presence: true, length: { maximum: 255 }, format: { with: VALID_EMAIL_REGEX }, uniqueness: true
   before_save { self.email = email.downcase }
   validates :password, length: { minimum: 6 }, allow_nil: true
+  before_create :create_activation_digest
   # this method is introduced by bcrypt, which acts as a call back function
   # it also includes a separate presence validation on object creation.
   has_secure_password
@@ -34,13 +35,17 @@ class User < ActiveRecord::Base
   # Remembers a user in the database for use in persistent sessions.
   def remember
     self.remember_token = self.class.new_token
-    update_attribute(:remember_digest, User.digest(self.remember_token))
+    update_attribute(:remember_digest, self.digest(self.remember_token))
   end
 
   # Returns true if the given token matches the digest.
-  def authenticated?(remember_token)
-    return false if self.remember_digest.blank?
-    BCrypt::Password.new(self.remember_digest).is_password?(remember_token)
+  # it will authenticate either a persistent connection (by remember_digest)
+  # or an activation of a new user (by activate_digest)
+  def authenticated?(attribute, token)
+    digest = self.send("#{attribute}_digest")
+
+    return false if digest.nil?
+    BCrypt::Password.new(digest).is_password?(token)
   end
 
   # Forgets a user.
@@ -52,14 +57,24 @@ class User < ActiveRecord::Base
 
   # for test purpose only
   def new_record?
-    $stderr.puts 'In new_record? method!' if Rails.env.development?
     super
   end
 
 
+  # Creates and assigns the activation token and digest.
+  def create_activation_digest
+    self.activation_token  = self.class.new_token
+    self.activation_digest = self.class.digest(activation_token)
+  end
 
-  def self.find(*args)
-    puts 'In find method' if Rails.env.development?
-    super(*args)
+  # Activates an account.
+  def activate
+    update_attribute(:activated,    true)
+    update_attribute(:activated_at, Time.zone.now)
+  end
+
+  # Sends activation email.
+  def send_activation_email
+    UserMailer.account_activation(self).deliver_now
   end
 end
