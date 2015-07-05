@@ -1,0 +1,28 @@
+<!--
+    Note the inclusion of
+        html: { multipart: true }
+    in the arguments to form_for, which is necessary for file uploads.
+-->
+
+<%= form_for(@micropost, html: { multipart: true }) do |f| %>
+    <%= render 'shared/error_messages', object: f.object %>
+    <div class="field">
+      <%= f.text_area :content, placeholder: "Compose new micropost..." %>
+    </div>
+    <%= f.submit "Post", class: "btn btn-primary" %>
+    <span class="picture">
+      <!-- The valid formats consist of the MIME types accepted by the validation (by using the accept) -->
+      <%= f.file_field :picture, accept: 'image/jpeg,image/gif,image/png' %>
+    </span>
+<% end %>
+
+<!-- this is actually a jquery -->
+<script type="text/javascript">
+    // the micropost_picture is the id of the <f.file_field :picture, accept: 'image/jpeg,image/gif,image/png'> above
+    $('#micropost_picture').bind('change', function() {
+        var size_in_megabytes = this.files[0].size/1024/1024;
+        if (size_in_megabytes > 5) {
+            alert('Maximum file size is 5MB. Please choose a smaller file.');
+        }
+    });
+</script>

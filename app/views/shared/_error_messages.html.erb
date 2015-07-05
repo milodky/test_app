@@ -1,14 +1,14 @@
-<% if @user.errors.any? %>
+<% if object.errors.any? %>
     <!--
    the CSS id error_explanation for use in styling the error messages. (CSS uses the pound sign # to style ids.)
    after an invalid submission Rails automatically wraps the fields with errors in divs with the CSS class field_with_errors
    -->
     <div id="error_explanation">
       <div class="alert alert-danger">
-        The form contains <%= pluralize(@user.errors.count, "error") %>.
+        The form contains <%= pluralize(object.errors.count, "error") %>.
       </div>
       <ul>
-        <% @user.errors.full_messages.each do |msg| %>
+        <% object.errors.full_messages.each do |msg| %>
             <li><%= msg %></li>
         <% end %>
       </ul>

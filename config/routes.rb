@@ -5,7 +5,7 @@ Rails.application.routes.draw do
   end
   get 'help' => 'static_pages#help'
   root 'static_pages#home'
-  resources :microposts
+  resources :microposts,          only: [:create, :destroy]
   resources :users
   resources :account_activations, only: [:edit]
 

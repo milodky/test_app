@@ -8,6 +8,16 @@
       </h1>
     </section>
   </aside>
+  <div class="col-md-8">
+    <% if @user.microposts.any? %>
+        <h3>Microposts (<%= @user.microposts.count %>)</h3>
+        <ol class="microposts">
+          <!-- it will call _micropost.html.erb -->
+          <%= render @microposts %>
+        </ol>
+        <%= will_paginate @microposts %>
+    <% end %>
+  </div>
 </div>
 
 <p id="notice"><%= notice %></p>
@@ -22,5 +32,4 @@
   <%= @user.email %>
 </p>
 
-<%= link_to 'Edit', edit_user_path(@user) %> |
 <%= link_to 'Back', users_path %>

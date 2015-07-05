@@ -16,6 +16,7 @@ class UsersController < ApplicationController
   # GET /users/1
   # GET /users/1.json
   def show
+    @microposts = @user.microposts.paginate(page: params[:page], :per_page => DEFAULT_PER_PAGE)
   end
 
   # GET /users/new
@@ -82,14 +83,6 @@ class UsersController < ApplicationController
   # Never trust parameters from the scary internet, only allow the white list through.
   def user_params
     params.require(:user).permit(:name, :email, :password, :password_confirmation)
-  end
-
-  # Confirms a logged-in user.
-  def logged_in_user
-    return if logged_in?
-    store_location
-    flash[:danger] = "Please log in."
-    redirect_to login_url
   end
 
   # Confirms the correct user.
