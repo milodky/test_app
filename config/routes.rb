@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :password_resets,     only: [:new, :create, :edit, :update]
   namespace :static_pages do
     get :home
   end
