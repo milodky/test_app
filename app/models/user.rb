@@ -1,8 +1,25 @@
 class User < ActiveRecord::Base
   attr_accessor :remember_token, :activation_token, :reset_token
+
+  ###############################################################
+  ##############  below are all business logic ##################
+  ###############################################################
+
   # Here the option dependent: :destroy arranges for the dependent
   # microposts to be destroyed when the user itself is destroyed
   has_many :microposts, dependent: :destroy
+  has_many :active_relationships,  class_name: 'Relationship', foreign_key: 'follower_id', dependent: :destroy
+  has_many :passive_relationships, class_name: 'Relationship', foreign_key: 'followed_id', dependent: :destroy
+  # Rails allows us to override the default, in this case using the source parameter,
+  # which explicitly tells Rails that the source of the following array is the set of
+  # followed ids.
+  has_many :following, through: :active_relationships,  source: :followed
+  has_many :followers, through: :passive_relationships, source: :follower
+
+
+
+
+
   VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
   validates :name, presence: true
   validates :email, presence: true, length: { maximum: 255 }, format: { with: VALID_EMAIL_REGEX }, uniqueness: true
@@ -12,7 +29,6 @@ class User < ActiveRecord::Base
   # this method is introduced by bcrypt, which acts as a call back function
   # it also includes a separate presence validation on object creation.
   has_secure_password
-
 
   # Returns the hash digest of the given string.
   def self.digest(string)
@@ -101,6 +117,26 @@ class User < ActiveRecord::Base
   # Returns true if a password reset has expired.
   def password_reset_expired?
     reset_sent_at < 2.hours.ago
+  end
+
+  # Follows a user.
+  def follow(other_user)
+    active_relationships.create(followed_id: other_user.id)
+  end
+
+  # Unfollows a user.
+  def unfollow(other_user)
+    active_relationships.find_by(followed_id: other_user.id).destroy
+  end
+
+  # Returns true if the current user is following the other user.
+  def following?(other_user)
+    following.include?(other_user)
+  end
+
+  # Returns a user's status feed.
+  def feed
+    Micropost.where("user_id IN (?) OR user_id = ?", self.following_ids, self.id)
   end
 
 end

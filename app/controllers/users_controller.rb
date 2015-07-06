@@ -1,6 +1,6 @@
 class UsersController < ApplicationController
   before_action :set_user, only: [:show, :destroy]
-  before_action :logged_in_user, only: [:edit, :update, :index, :destroy]
+  before_action :logged_in_user, only: [:edit, :update, :index, :destroy, :following, :followers]
   before_action :correct_user,   only: [:edit, :update]
   # any sufficiently sophisticated attacker could simply issue a DELETE
   # request directly from the command line to delete any user on the site
@@ -73,6 +73,21 @@ class UsersController < ApplicationController
     flash[:success] = 'User was successfully destroyed.'
     redirect_to users_url
   end
+
+  def following
+    @title = "Following"
+    @user  = User.find(params[:id])
+    @users = @user.following.paginate(page: params[:page])
+    render 'show_follow'
+  end
+
+  def followers
+    @title = "Followers"
+    @user  = User.find(params[:id])
+    @users = @user.followers.paginate(page: params[:page])
+    render 'show_follow'
+  end
+
 
   private
   # Use callbacks to share common setup or constraints between actions.

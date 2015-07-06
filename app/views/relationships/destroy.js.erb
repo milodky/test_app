@@ -1,0 +1,4 @@
+// With these, you should navigate to a user profile page and verify
+// that you can follow and unfollow without a page refresh.
+$("#follow_form").html("<%= escape_javascript(render('users/follow')) %>");
+$("#followers").html('<%= @user.followers.count %>');

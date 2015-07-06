@@ -23,3 +23,8 @@ class Micropost < ActiveRecord::Base
     end
   end
 end
+
+# An id used in this manner to connect two database tables is known as a foreign key,
+# and when the foreign key for a User model object is user_id, Rails infers the
+# association automatically: by default, Rails expects a foreign key of the form <class>_id,
+# where <class> is the lower-case version of the class name

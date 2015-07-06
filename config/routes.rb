@@ -8,10 +8,27 @@ Rails.application.routes.draw do
   resources :microposts,          only: [:create, :destroy]
   resources :users
   resources :account_activations, only: [:edit]
+  resources :relationships,       only: [:create, :destroy]
 
   get    'login'   => 'sessions#new'
   post   'login'   => 'sessions#create'
   delete 'logout'  => 'sessions#destroy'
+
+  resources :users do
+    # the URLs for following and followers will look like /users/1/following and /users/1/followers
+    member do
+      get :following, :followers
+    end
+  end
+
+  # the member method arranges for the routes to respond to URLs containing the user id. The other
+  # possibility, collection, works without the id, so that
+  #   resources :users do
+  #     collection do
+  #       get :tigers
+  #     end
+  #   end
+  # would respond to the URL /users/tigers
 
   get 'signup'  => 'users#new'
 
